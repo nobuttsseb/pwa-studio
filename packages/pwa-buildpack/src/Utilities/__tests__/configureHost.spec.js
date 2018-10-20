@@ -1,11 +1,10 @@
-jest.mock('devcert');
-
 const pkgLocTest = process.cwd() + '/package.json';
 const pkg = jest.fn();
 jest.doMock(pkgLocTest, pkg, { virtual: true });
 const devcert = require('devcert');
 const { configureHost } = require('../');
 const execa = require('execa');
+const isTTY = require('../../util/is-tty');
 
 const fakeCertPair = {
     key: Buffer.from('fakeKey'),
@@ -167,13 +166,11 @@ test('fails informatively if devcert fails', async () => {
 });
 
 test('fails if process is not connected to tty', async () => {
+    isTTY.mockReturnValueOnce(false);
     simulate.certCreated();
-    const oldIsTTY = process.stdin.isTTY;
-    process.stdin.isTTY = false;
     await expect(configureHost({ subdomain: 'uss.hood' })).rejects.toThrowError(
         'interactive'
     );
-    process.stdin.isTTY = oldIsTTY;
 });
 
 test('fails after a timeout if devcert never fulfills', async () => {

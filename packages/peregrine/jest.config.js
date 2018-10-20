@@ -6,6 +6,6 @@ module.exports = {
     ],
     browser: true,
     testURL: 'https://localhost/',
-    coveragePathIgnorePatterns: ['scripts/*', 'node_modules', 'src/index.js'],
+    coveragePathIgnorePatterns: ['scripts/*', 'node_modules'],
     testPathIgnorePatterns: ['dist', 'node_modules']
 };

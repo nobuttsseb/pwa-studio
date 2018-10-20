@@ -5,6 +5,9 @@ const devcert = require('devcert');
 const os = require('os');
 const chalk = require('chalk');
 const execa = require('execa');
+
+// Implemented as a separate file so that testing can mock it out
+const isTTY = require('../util/is-tty');
 const { username } = os.userInfo();
 
 const DEFAULT_NAME = 'my-pwa';
@@ -31,16 +34,19 @@ function getCert(hostname) {
             30000
         );
         if (!alreadyProvisioned(hostname)) {
-            if (process.stdin.isTTY) {
+            if (isTTY(process)) {
                 if (!(await isSudoSession())) {
                     console.warn(
                         chalk.greenBright(`Creating a local development domain requires temporary administrative privileges.
 Please enter the password for ${chalk.whiteBright(
                             username
-                        )} on ${chalk.whiteBright(os.hostname())}.`)
+                        )} on ${chalk.whiteBright(
+                            os.hostname()
+                        )} when the "Password:" prompt appears below.`)
                     );
                 }
             } else {
+                clearTimeout(timeout);
                 return reject(
                     new Error(
                         'Creating a local development domain requires an interactive terminal for the user to answer prompts. Run the development server (e.g. `npm run watch:venia`) by itself in the terminal to continue.'
@@ -57,7 +63,10 @@ Please enter the password for ${chalk.whiteBright(
                     cert: certBuffers.cert.toString('utf8')
                 });
             })
-            .catch(reject);
+            .catch(e => {
+                clearTimeout(timeout);
+                reject(e);
+            });
     });
 }
 
