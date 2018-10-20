@@ -23,7 +23,7 @@
     "prettier:check": "prettier --list-different '@(packages|scripts)/**/*.@(js|css)' '*.js'",
     "stage:venia": "cd packages/venia-concept && npm start; cd - >/dev/null",
     "test": "jest",
-    "test:ci": "npm run -s test -- -i --json --outputFile=test-results.json",
+    "test:ci": "jest --no-cache -i --json --outputFile=test-results.json",
     "test:debug": "node --inspect-brk node_modules/.bin/jest -i --no-coverage",
     "test:dev": "jest --watch --no-coverage",
     "validate:venia:gql": "cd packages/venia-concept && npm run -s validate-queries; cd - >/dev/null",
