@@ -2,13 +2,10 @@ import React, { Component } from 'react';
 import { func, shape, string } from 'prop-types';
 import classify from 'src/classify';
 import Button, { darkThemeClasses } from 'src/components/Button';
-import defaultCssClasses from './receipt.css';
+import defaultClasses from './receipt.css';
 
-const defaultClasses = {
-    ...defaultCssClasses,
-    resetCheckoutButtonClasses: darkThemeClasses,
-    createAccountButtonClasses: darkThemeClasses
-};
+export const CONTINUE_SHOPPING_BUTTON_ID = 'continue-shopping-button';
+export const CREATE_ACCOUNT_BUTTON_ID = 'create-account-button';
 
 class Receipt extends Component {
     static propTypes = {
@@ -21,12 +18,14 @@ class Receipt extends Component {
         order: shape({
             id: string
         }),
-        handleCreateAccount: func
+        handleCreateAccount: func,
+        reset: func
     };
 
     static defaultProps = {
         order: {},
         resetCheckout: () => {},
+        reset: () => {},
         handleCreateAccount: () => {}
     };
 
@@ -34,11 +33,14 @@ class Receipt extends Component {
         this.props.reset();
     }
 
+    createAccount = () => {
+        this.props.handleCreateAccount(this.props.history);
+    };
+
     render() {
         const {
             classes,
             resetCheckout,
-            handleCreateAccount,
             order: { id }
         } = this.props;
 
@@ -56,7 +58,8 @@ class Receipt extends Component {
                         tracking info
                     </div>
                     <Button
-                        classes={classes.resetCheckoutButtonClasses}
+                        data-id={CONTINUE_SHOPPING_BUTTON_ID}
+                        classes={darkThemeClasses}
                         onClick={resetCheckout}
                     >
                         Continue Shopping
@@ -66,8 +69,9 @@ class Receipt extends Component {
                         creating and account.
                     </div>
                     <Button
-                        classes={classes.createAccountButtonClasses}
-                        onClick={handleCreateAccount}
+                        data-id={CREATE_ACCOUNT_BUTTON_ID}
+                        classes={darkThemeClasses}
+                        onClick={this.createAccount}
                     >
                         Create an Account
                     </Button>
